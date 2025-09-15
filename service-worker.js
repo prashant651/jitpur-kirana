@@ -1,6 +1,6 @@
 // A simple service worker for caching the app shell to enable offline functionality.
 
-const CACHE_NAME = 'jitpur-kirana-cache-v5'; // Bumped version to ensure new worker installs
+const CACHE_NAME = 'jitpur-kirana-cache-v6'; // Bumped version to ensure new worker installs
 const urlsToCache = [
   './',
   './index.html',
@@ -50,7 +50,12 @@ const urlsToCache = [
   // External Resources
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js',
+  
+  // CRITICAL: Add CDN dependencies from import map for offline functionality
+  'https://aistudiocdn.com/react@^19.1.1',
+  'https://aistudiocdn.com/react-dom@^19.1.1/client.js',
+  'https://aistudiocdn.com/@google/genai@^1.19.0'
 ];
 
 // Install event: open a cache and add the app shell files to it.
@@ -59,7 +64,10 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Opened cache and caching app shell');
-        return cache.addAll(urlsToCache);
+        // Use addAll with a catch to log errors for specific failed URLs
+        return cache.addAll(urlsToCache).catch(error => {
+            console.error('Failed to cache one or more URLs:', error);
+        });
       })
       .then(() => self.skipWaiting()) // Force the waiting service worker to become the active service worker.
   );
@@ -67,6 +75,11 @@ self.addEventListener('install', event => {
 
 // Fetch event: serve cached content when offline, with a fallback for SPA navigation.
 self.addEventListener('fetch', event => {
+  // We only want to handle GET requests.
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -76,7 +89,16 @@ self.addEventListener('fetch', event => {
         }
         
         // Otherwise, fetch from the network.
-        return fetch(event.request).catch(() => {
+        // And if successful, cache the new response for next time.
+        return fetch(event.request).then(networkResponse => {
+            if (networkResponse.ok) {
+                 return caches.open(CACHE_NAME).then(cache => {
+                    cache.put(event.request, networkResponse.clone());
+                    return networkResponse;
+                });
+            }
+            return networkResponse;
+        }).catch(() => {
           // If the network fails and it's a navigation request (e.g., loading a page),
           // return the main app shell page. This is crucial for SPAs.
           if (event.request.mode === 'navigate') {
