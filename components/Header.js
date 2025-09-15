@@ -1,12 +1,21 @@
 import React from 'react';
+import { getTodayBS, bsMonthNames } from '../services/bs-date-utils.js';
 
 const Header = ({ theme, toggleTheme }) => {
     const Logo = () => (
-      React.createElement('svg', { width: "40", height: "40", viewBox: "0 0 24 24", fill: "none", xmlns: "http://www.w3.org/2000/svg", className: "text-blue-600 dark:text-blue-500" },
-          React.createElement('path', { d: "M21 6.5H3", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }),
-          React.createElement('path', { d: "M12 21V6.5", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }),
-          React.createElement('path', { d: "M18.843 3H5.157C4.195 3 3.513 4.024 3.94 4.886L9.798 16.514C10.852 18.6 13.148 18.6 14.202 16.514L20.06 4.886C20.487 4.024 19.805 3 18.843 3Z", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" }),
-          React.createElement('path', { d: "M3.5 17.5H20.5", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" })
+      React.createElement('svg', { width: "40", height: "40", viewBox: "0 0 40 40", fill: "none", xmlns: "http://www.w3.org/2000/svg" },
+        React.createElement('text', {
+          x: "50%",
+          y: "50%",
+          dy: ".3em",
+          textAnchor: "middle",
+          fontSize: "24",
+          fontFamily: "Arial, sans-serif",
+          fontWeight: "bold",
+        },
+          React.createElement('tspan', { fill: "#ef4444" }, "J"),
+          React.createElement('tspan', { fill: "#22c55e" }, "K")
+        )
       )
     );
 
@@ -21,6 +30,41 @@ const Header = ({ theme, toggleTheme }) => {
         React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" })
       )
     );
+    
+    const [currentTime, setCurrentTime] = React.useState(new Date());
+    const [nepaliDate, setNepaliDate] = React.useState('');
+    const previousDateRef = React.useRef(new Date().getDate());
+
+    React.useEffect(() => {
+        // Function to update Nepali date
+        const updateNepaliDate = () => {
+            const todayBS = getTodayBS();
+            const formattedDate = `${bsMonthNames[todayBS.month - 1]} ${todayBS.day}, ${todayBS.year}`;
+            setNepaliDate(formattedDate);
+        };
+
+        // Set initial date
+        updateNepaliDate();
+
+        const timerId = setInterval(() => {
+            const now = new Date();
+            // Check if the Gregorian date has changed to trigger a Nepali date update
+            if (now.getDate() !== previousDateRef.current) {
+                updateNepaliDate();
+                previousDateRef.current = now.getDate();
+            }
+            setCurrentTime(now);
+        }, 1000);
+
+        return () => clearInterval(timerId);
+    }, []); // Empty dependency array ensures this effect runs only once.
+    
+    const formattedTime = currentTime.toLocaleString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
 
     return (
         React.createElement('header', { className: "bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-30" },
@@ -29,6 +73,9 @@ const Header = ({ theme, toggleTheme }) => {
                     React.createElement(Logo, null),
                     React.createElement('h1', { className: "text-xl font-bold text-gray-900 dark:text-white hidden sm:block" },
                         "Jitpur Kirana"
+                    ),
+                    React.createElement('span', { className: "text-sm text-gray-500 dark:text-gray-400 font-mono hidden sm:block pl-3 ml-3 border-l border-gray-300 dark:border-gray-600" },
+                        `${nepaliDate} | ${formattedTime}`
                     )
                 ),
                 React.createElement('button', 
