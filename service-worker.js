@@ -1,6 +1,6 @@
 // A simple service worker for caching the app shell to enable offline functionality.
 
-const CACHE_NAME = 'jitpur-kirana-cache-v6'; // Bumped version to ensure new worker installs
+const CACHE_NAME = 'jitpur-kirana-cache-v7'; // Bumped version to ensure new worker installs
 const urlsToCache = [
   './',
   './index.html',
@@ -52,10 +52,10 @@ const urlsToCache = [
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js',
   
-  // CRITICAL: Add CDN dependencies from import map for offline functionality
-  'https://aistudiocdn.com/react@^19.1.1',
-  'https://aistudiocdn.com/react-dom@^19.1.1/client.js',
-  'https://aistudiocdn.com/@google/genai@^1.19.0'
+  // CRITICAL: Use explicit, fully-resolved CDN URLs for robust caching
+  'https://aistudiocdn.com/react@19.1.1/index.js',
+  'https://aistudiocdn.com/react-dom@19.1.1/client.js',
+  'https://aistudiocdn.com/@google/genai@1.19.0/index.js'
 ];
 
 // Install event: open a cache and add the app shell files to it.
@@ -91,12 +91,22 @@ self.addEventListener('fetch', event => {
         // Otherwise, fetch from the network.
         // And if successful, cache the new response for next time.
         return fetch(event.request).then(networkResponse => {
-            if (networkResponse.ok) {
-                 return caches.open(CACHE_NAME).then(cache => {
-                    cache.put(event.request, networkResponse.clone());
-                    return networkResponse;
-                });
+            // Check if we received a valid response
+            if(!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic' && !networkResponse.type.endsWith('cors')) {
+                return networkResponse;
             }
+            
+            // IMPORTANT: Clone the response. A response is a stream
+            // and because we want the browser to consume the response
+            // as well as the cache consuming the response, we need
+            // to clone it so we have two streams.
+            var responseToCache = networkResponse.clone();
+
+            caches.open(CACHE_NAME)
+                .then(function(cache) {
+                    cache.put(event.request, responseToCache);
+                });
+
             return networkResponse;
         }).catch(() => {
           // If the network fails and it's a navigation request (e.g., loading a page),
