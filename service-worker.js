@@ -1,51 +1,51 @@
 // A simple service worker for caching the app shell to enable offline functionality.
 
-const CACHE_NAME = 'jitpur-kirana-cache-v4'; // Bumped version to ensure new worker installs
+const CACHE_NAME = 'jitpur-kirana-cache-v5'; // Bumped version to ensure new worker installs
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/index.js',
-  '/favicon.svg',
-  '/manifest.json',
+  './',
+  './index.html',
+  './index.js',
+  './favicon.svg',
+  './manifest.json',
   
   // App Core
-  '/App.js',
-  '/types.js',
+  './App.js',
+  './types.js',
   
   // Hooks
-  '/hooks/usePersistentState.js',
+  './hooks/usePersistentState.js',
   
   // Services
-  '/services/bs-date-utils.js',
-  '/services/geminiService.js',
-  '/services/mock-data.js',
+  './services/bs-date-utils.js',
+  './services/geminiService.js',
+  './services/mock-data.js',
 
   // Components
-  '/components/AccountForm.js',
-  '/components/AccountLedger.js',
-  '/components/Accounts.js',
-  '/components/AccountsView.js',
-  '/components/CalendarView.js',
-  '/components/CashBalanceSheet.js',
-  '/components/ChequeCard.js',
-  '/components/ChequeForm.js',
-  '/components/ChequeManager.js',
-  '/components/ContactBookView.js',
-  '/components/Contacts.js',
-  '/components/Dashboard.js',
-  '/components/DashboardView.js',
-  '/components/Header.js',
-  '/components/HisabAccountsLedger.js',
-  '/components/HomeDashboard.js',
-  '/components/IdeaCard.js', // This is the AccountCard
-  '/components/Loader.js',
-  '/components/Nav.js',
-  '/components/PlaceholderView.js',
-  '/components/Settings.js',
-  '/components/StockManager.js',
-  '/components/StockTable.js',
-  '/components/TransactionForm.js',
-  '/components/TransactionHistory.js',
+  './components/AccountForm.js',
+  './components/AccountLedger.js',
+  './components/Accounts.js',
+  './components/AccountsView.js',
+  './components/CalendarView.js',
+  './components/CashBalanceSheet.js',
+  './components/ChequeCard.js',
+  './components/ChequeForm.js',
+  './components/ChequeManager.js',
+  './components/ContactBookView.js',
+  './components/Contacts.js',
+  './components/Dashboard.js',
+  './components/DashboardView.js',
+  './components/Header.js',
+  './components/HisabAccountsLedger.js',
+  './components/HomeDashboard.js',
+  './components/IdeaCard.js', // This is the AccountCard
+  './components/Loader.js',
+  './components/Nav.js',
+  './components/PlaceholderView.js',
+  './components/Settings.js',
+  './components/StockManager.js',
+  './components/StockTable.js',
+  './components/TransactionForm.js',
+  './components/TransactionHistory.js',
 
   // External Resources
   'https://cdn.tailwindcss.com',
@@ -80,7 +80,7 @@ self.addEventListener('fetch', event => {
           // If the network fails and it's a navigation request (e.g., loading a page),
           // return the main app shell page. This is crucial for SPAs.
           if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
+            return caches.match('./index.html');
           }
         });
       })
