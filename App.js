@@ -60,6 +60,8 @@ const App = () => {
                 return;
             }
 
+            // Only show notifications if permission has already been granted.
+            // DO NOT request permission here, as it crashes mobile browsers on load.
             if (Notification.permission === "granted") {
                 const today = getTodayBSString(); // Use BS Date utility
                 const lastCheck = localStorage.getItem('lastNotificationCheck');
@@ -73,16 +75,10 @@ const App = () => {
                 if (todaysReminders.length > 0) {
                     const notification = new Notification('Jitpur Kirana Cheque Reminders', {
                         body: `You have ${todaysReminders.length} cheque reminder(s) for today.`,
+                        icon: './favicon.svg'
                     });
                 }
                 localStorage.setItem('lastNotificationCheck', today);
-
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        checkReminders(); // Try again now that we have permission
-                    }
-                });
             }
         };
 
