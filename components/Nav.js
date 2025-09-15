@@ -36,7 +36,7 @@ const Nav = ({ activeView, setActiveView }) => {
     return (
         React.createElement('nav', { className: "sm:bg-white sm:dark:bg-gray-800 sm:shadow-md sm:relative fixed bottom-0 left-0 right-0 z-20 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 sm:border-t-0" },
             // Mobile View (Bottom Bar)
-            React.createElement('div', { className: "container mx-auto px-2 flex justify-around sm:hidden" },
+            React.createElement('div', { className: "w-full px-2 flex justify-around sm:hidden" },
                renderNavItems([homeButton, ...mainButtons, navItems.find(item => item.id === 'contacts')].filter(Boolean))
             ),
             // Desktop View (Top Tab Bar)

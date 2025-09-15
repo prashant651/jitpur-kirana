@@ -264,7 +264,7 @@ const App = () => {
         React.createElement('div', { className: "bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-300" },
             React.createElement(Header, { theme: theme, toggleTheme: toggleTheme }),
             React.createElement(Nav, { activeView: activeView, setActiveView: setActiveView }),
-            React.createElement('main', { className: "p-4 sm:p-6 container mx-auto pb-20 sm:pb-6" },
+            React.createElement('main', { className: "p-4 sm:p-6 sm:container sm:mx-auto pb-20 sm:pb-6" },
                 renderView()
             )
         )
