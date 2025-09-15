@@ -14,7 +14,7 @@ const StatusBadge = ({ status }) => {
     );
 };
 
-export const ChequeCard = ({ cheque, onUpdateStatus }) => {
+export const ChequeCard = ({ cheque, onUpdateStatus, onDelete }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
     const amountColor = cheque.type === 'payable' ? 'text-red-600 dark:text-red-500' : 'text-green-600 dark:text-green-500';
@@ -52,7 +52,7 @@ export const ChequeCard = ({ cheque, onUpdateStatus }) => {
                         React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M12 5v.01M12 12v.01M12 19v.01" }))
                     ),
                     menuOpen && (
-                        React.createElement('div', { className: "absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-xl z-10" },
+                        React.createElement('div', { className: "absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-xl z-10 divide-y divide-gray-100 dark:divide-gray-600" },
                             cheque.status === ChequeStatus.Pending && (
                                 React.createElement('button',
                                     {
@@ -60,11 +60,22 @@ export const ChequeCard = ({ cheque, onUpdateStatus }) => {
                                             onUpdateStatus(cheque.id, ChequeStatus.Cleared);
                                             setMenuOpen(false);
                                         },
-                                        className: "w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md transition-colors"
+                                        className: "w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
                                     },
-                                   React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-4 w-4", viewBox: "0 0 20 20", fill: "currentColor" }, React.createElement('path', { fillRule: "evenodd", d: "M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z", clipRule: "evenodd" })),
+                                   React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-4 w-4 text-green-500", viewBox: "0 0 20 20", fill: "currentColor" }, React.createElement('path', { fillRule: "evenodd", d: "M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z", clipRule: "evenodd" })),
                                     "Mark as Cleared"
                                 )
+                            ),
+                             React.createElement('button',
+                                {
+                                    onClick: () => {
+                                        onDelete();
+                                        setMenuOpen(false);
+                                    },
+                                    className: "w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                                },
+                                React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-4 w-4", viewBox: "0 0 20 20", fill: "currentColor" }, React.createElement('path', { fillRule: "evenodd", d: "M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z", clipRule: "evenodd" })),
+                                "Delete"
                             )
                         )
                     )

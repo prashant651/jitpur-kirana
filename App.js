@@ -60,10 +60,8 @@ const App = () => {
                 return;
             }
 
-            // Only show notifications if permission has already been granted.
-            // DO NOT request permission here, as it crashes mobile browsers on load.
             if (Notification.permission === "granted") {
-                const today = getTodayBSString(); // Use BS Date utility
+                const today = getTodayBSString();
                 const lastCheck = localStorage.getItem('lastNotificationCheck');
 
                 if (lastCheck === today) {
@@ -73,9 +71,16 @@ const App = () => {
                 const todaysReminders = cheques.filter(c => c.reminderDate === today && c.status === ChequeStatus.Pending);
 
                 if (todaysReminders.length > 0) {
-                    const notification = new Notification('Jitpur Kirana Cheque Reminders', {
-                        body: `You have ${todaysReminders.length} cheque reminder(s) for today.`,
-                        icon: './favicon.svg'
+                     todaysReminders.forEach(cheque => {
+                        const type = cheque.type.charAt(0).toUpperCase() + cheque.type.slice(1);
+                        const contact = accounts.find(acc => acc.name === cheque.partyName);
+                        const phone = contact?.phone ? ` (${contact.phone})` : '';
+                        const body = `${type} cheque for Rs ${cheque.amount.toLocaleString()} to/from ${cheque.partyName}${phone}. Cheque date: ${cheque.date}.`;
+                        
+                        new Notification('Jitpur Kirana Cheque Reminder', {
+                            body: body,
+                            icon: './favicon.svg'
+                        });
                     });
                 }
                 localStorage.setItem('lastNotificationCheck', today);
@@ -83,7 +88,7 @@ const App = () => {
         };
 
         checkReminders();
-    }, [cheques]);
+    }, [cheques, accounts]);
 
     const toggleTheme = () => {
         setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
@@ -147,6 +152,12 @@ const App = () => {
         }
     };
 
+    const handleDeleteCheque = (chequeId) => {
+        if (window.confirm('Are you sure you want to delete this cheque record? This action cannot be undone.')) {
+            setCheques(prev => prev.filter(c => c.id !== chequeId));
+        }
+    };
+
     const handleUpdateChequeStatus = (chequeId, status) => {
         setCheques(prevCheques =>
             prevCheques.map(cheque =>
@@ -199,6 +210,12 @@ const App = () => {
         setHisabTransactions(prev => [...prev, ...newHisabTransactions]);
         alert(`Hisab for ${hisabData.date} submitted successfully and accounts updated!`);
     };
+    
+    const handleUpdateHisabStatus = (date, status) => {
+        setDailyHisabs(prev => 
+            prev.map(h => (h.date === date ? { ...h, status: status } : h))
+        );
+    };
 
     const renderView = () => {
         switch (activeView) {
@@ -221,8 +238,11 @@ const App = () => {
             case 'cheques':
                 return React.createElement(ChequeManager, { 
                     cheques: cheques,
+                    accounts: accounts,
                     onSaveCheque: handleSaveCheque,
-                    onUpdateChequeStatus: handleUpdateChequeStatus
+                    onSaveNewAccount: handleSaveAccount,
+                    onUpdateChequeStatus: handleUpdateChequeStatus,
+                    onDeleteCheque: handleDeleteCheque
                 });
             case 'stock':
                 return React.createElement(StockManager, { 
@@ -230,7 +250,8 @@ const App = () => {
                     hisabAccounts: hisabAccounts,
                     hisabTransactions: hisabTransactions,
                     onSubmitHisab: handleSubmitHisab,
-                    onSaveHisabAccount: handleSaveHisabAccount
+                    onSaveHisabAccount: handleSaveHisabAccount,
+                    onUpdateHisabStatus: handleUpdateHisabStatus
                 });
             case 'settings':
                 return React.createElement(Settings, null);
@@ -242,8 +263,8 @@ const App = () => {
     return (
         React.createElement('div', { className: "bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-300" },
             React.createElement(Header, { theme: theme, toggleTheme: toggleTheme }),
-            activeView !== 'home' && React.createElement(Nav, { activeView: activeView, setActiveView: setActiveView }),
-            React.createElement('main', { className: "p-4 sm:p-6 container mx-auto" },
+            React.createElement(Nav, { activeView: activeView, setActiveView: setActiveView }),
+            React.createElement('main', { className: "p-4 sm:p-6 container mx-auto pb-20 sm:pb-6" },
                 renderView()
             )
         )

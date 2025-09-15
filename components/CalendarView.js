@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { getBSMonthData, bsMonthNames, DEMO_TODAY, getTodayBSString } from '../services/bs-date-utils.js';
+import { getBSMonthData, bsMonthNames, getTodayBS, getTodayBSString } from '../services/bs-date-utils.js';
 
 const AgendaChequeItem = ({ cheque }) => {
     const amountColor = cheque.type === 'payable' ? 'text-red-600 dark:text-red-500' : 'text-green-600 dark:text-green-500';
@@ -17,9 +17,10 @@ const AgendaChequeItem = ({ cheque }) => {
 };
 
 const CalendarView = ({ cheques }) => {
-    const [currentBSYear, setCurrentBSYear] = useState(DEMO_TODAY.year);
-    const [currentBSMonth, setCurrentBSMonth] = useState(DEMO_TODAY.month);
-    const [selectedDate, setSelectedDate] = useState(DEMO_TODAY);
+    const today = useMemo(() => getTodayBS(), []);
+    const [currentBSYear, setCurrentBSYear] = useState(today.year);
+    const [currentBSMonth, setCurrentBSMonth] = useState(today.month);
+    const [selectedDate, setSelectedDate] = useState(today);
 
     const { daysInMonth, startDayOfWeek } = useMemo(() => getBSMonthData(currentBSYear, currentBSMonth), [currentBSYear, currentBSMonth]);
 

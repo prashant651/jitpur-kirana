@@ -27,7 +27,7 @@ const Header = ({ theme, toggleTheme }) => {
             React.createElement('div', { className: "container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center" },
                 React.createElement('div', { className: "flex items-center gap-3" },
                     React.createElement(Logo, null),
-                    React.createElement('h1', { className: "text-xl font-bold text-gray-900 dark:text-white sm:block" },
+                    React.createElement('h1', { className: "text-xl font-bold text-gray-900 dark:text-white hidden sm:block" },
                         "Jitpur Kirana"
                     )
                 ),

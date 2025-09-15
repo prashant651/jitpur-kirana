@@ -25,7 +25,7 @@ const ViewToggleButton = ({ active, onClick, children }) => (
     )
 );
 
-const ChequeManager = ({ cheques, onSaveCheque, onUpdateChequeStatus }) => {
+const ChequeManager = ({ cheques, accounts, onSaveCheque, onSaveNewAccount, onUpdateChequeStatus, onDeleteCheque }) => {
   const [activeTab, setActiveTab] = useState('payable');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [viewMode, setViewMode] = useState('list');
@@ -90,7 +90,7 @@ const ChequeManager = ({ cheques, onSaveCheque, onUpdateChequeStatus }) => {
           filteredCheques.length > 0 ? (
               React.createElement('div', { className: "space-y-4" },
                   filteredCheques.map(cheque => (
-                      React.createElement(ChequeCard, { key: cheque.id, cheque: cheque, onUpdateStatus: onUpdateChequeStatus })
+                      React.createElement(ChequeCard, { key: cheque.id, cheque: cheque, onUpdateStatus: onUpdateChequeStatus, onDelete: () => onDeleteCheque(cheque.id) })
                   ))
               )
           ) : (
@@ -113,7 +113,9 @@ const ChequeManager = ({ cheques, onSaveCheque, onUpdateChequeStatus }) => {
         { isOpen: isFormOpen,
         onClose: () => setIsFormOpen(false),
         onSave: handleSave,
-        chequeType: activeTab }
+        chequeType: activeTab,
+        accounts: accounts,
+        onSaveNewAccount: onSaveNewAccount }
       )
     )
   );

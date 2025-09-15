@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { getTodayBSString, getPreviousDateString } from '../services/bs-date-utils.js';
+import { getTodayBSString, getPreviousDateString, getNextDateString } from '../services/bs-date-utils.js';
 import { StockTable } from './StockTable.js';
 import { CashBalanceSheet } from './CashBalanceSheet.js';
 import { commonItems } from '../services/mock-data.js';
@@ -25,6 +25,13 @@ const SalesReports = ({ hisabs }) => {
         });
         return Array.from(itemSet).sort();
     }, [submittedHisabs]);
+
+    const reportPeriods = [
+        { value: 'weekly', label: 'This Week (Last 7d)' },
+        { value: 'prev_week', label: 'Previous Week (7d)' },
+        { value: 'monthly', label: 'This Month (Last 30d)' },
+        { value: 'prev_month', label: 'Previous Month (30d)' }
+    ];
 
     const periodDetails = useMemo(() => {
         switch(reportPeriod) {
@@ -134,21 +141,23 @@ const SalesReports = ({ hisabs }) => {
         React.createElement('div', { className: "space-y-6" },
             React.createElement('div', { className: "bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700" },
                 React.createElement('h2', { className: "text-xl font-bold" }, "Sales Reports"),
-                React.createElement('div', { className: "flex flex-col sm:flex-row gap-4 items-center mt-4" },
+                React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-4 mt-4" },
                     React.createElement('select',
                         {
                             value: selectedItemName,
                             onChange: (e) => setSelectedItemName(e.target.value),
-                            className: "w-full sm:w-80 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                            className: "w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                         },
                         React.createElement('option', { value: "" }, "-- Select an Item --"),
                         uniqueItemNames.map(name => React.createElement('option', { key: name, value: name }, name))
                     ),
-                    React.createElement('div', { className: "flex flex-wrap items-center gap-2 p-1 bg-gray-200 dark:bg-gray-900 rounded-lg" },
-                        React.createElement('button', { onClick: () => setReportPeriod('weekly'), className: `px-3 py-1.5 text-sm font-semibold rounded-md ${reportPeriod === 'weekly' ? 'bg-white dark:bg-gray-700 text-blue-600 shadow' : 'text-gray-600 dark:text-gray-300'}` }, "This Week"),
-                        React.createElement('button', { onClick: () => setReportPeriod('prev_week'), className: `px-3 py-1.5 text-sm font-semibold rounded-md ${reportPeriod === 'prev_week' ? 'bg-white dark:bg-gray-700 text-blue-600 shadow' : 'text-gray-600 dark:text-gray-300'}` }, "Previous Week"),
-                        React.createElement('button', { onClick: () => setReportPeriod('monthly'), className: `px-3 py-1.5 text-sm font-semibold rounded-md ${reportPeriod === 'monthly' ? 'bg-white dark:bg-gray-700 text-blue-600 shadow' : 'text-gray-600 dark:text-gray-300'}` }, "This Month"),
-                        React.createElement('button', { onClick: () => setReportPeriod('prev_month'), className: `px-3 py-1.5 text-sm font-semibold rounded-md ${reportPeriod === 'prev_month' ? 'bg-white dark:bg-gray-700 text-blue-600 shadow' : 'text-gray-600 dark:text-gray-300'}` }, "Previous Month")
+                    React.createElement('select',
+                        {
+                            value: reportPeriod,
+                            onChange: (e) => setReportPeriod(e.target.value),
+                            className: "w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        },
+                        reportPeriods.map(p => React.createElement('option', { key: p.value, value: p.value }, p.label))
                     )
                 )
             ),
@@ -202,7 +211,7 @@ const SalesReports = ({ hisabs }) => {
 };
 
 
-const HisabHistory = ({ hisabs, onSelectHisab }) => {
+const HisabHistory = ({ hisabs, onSelectHisab, onEditHisab }) => {
     const submittedHisabs = hisabs.filter(h => h.status === 'submitted').sort((a,b) => b.date.localeCompare(a.date));
 
     return (
@@ -221,8 +230,13 @@ const HisabHistory = ({ hisabs, onSelectHisab }) => {
                                     }, 0).toLocaleString()}`
                                 )
                             ),
-                            React.createElement('button', { onClick: () => onSelectHisab(hisab.date), className: "px-3 py-1 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 transition-colors text-sm dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500" },
-                                "View Details"
+                            React.createElement('div', { className: "flex items-center gap-2" },
+                                React.createElement('button', { onClick: () => onEditHisab(hisab.date), className: "px-3 py-1 bg-yellow-500 text-white font-semibold rounded-md hover:bg-yellow-600 transition-colors text-sm" },
+                                    "Edit"
+                                ),
+                                React.createElement('button', { onClick: () => onSelectHisab(hisab.date), className: "px-3 py-1 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 transition-colors text-sm dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500" },
+                                    "View"
+                                )
                             )
                         )
                     ))
@@ -248,7 +262,7 @@ const StockNavTab = ({ label, isActive, onClick }) => (
     )
 );
 
-const StockManager = ({ hisabs, hisabAccounts, hisabTransactions, onSubmitHisab, onSaveHisabAccount }) => {
+const StockManager = ({ hisabs, hisabAccounts, hisabTransactions, onSubmitHisab, onSaveHisabAccount, onUpdateHisabStatus }) => {
   const [selectedDate, setSelectedDate] = useState(getTodayBSString());
   const [currentHisab, setCurrentHisab] = useState(null);
   const [activeTab, setActiveTab] = useState('entry');
@@ -263,7 +277,7 @@ const StockManager = ({ hisabs, hisabAccounts, hisabTransactions, onSubmitHisab,
       return {
         id: `item-${Date.now()}-${index}`,
         name: item.name,
-        rate: prevItem ? prevItem.rate : item.rate,
+        rate: prevItem ? prevItem.rate : 0,
         openingQty: prevItem ? prevItem.closingQty : 0,
         closingQty: 0,
       };
@@ -313,12 +327,14 @@ const StockManager = ({ hisabs, hisabAccounts, hisabTransactions, onSubmitHisab,
   };
 
   const handleSubmit = () => {
-    if (currentHisab && currentHisab.status === 'draft') {
+    if (currentHisab) {
         const cleanedHisab = {
             ...currentHisab,
             stockItems: currentHisab.stockItems.filter(item => item.name.trim() !== '')
         };
       onSubmitHisab(cleanedHisab);
+      // Automatically advance to the next day
+      setSelectedDate(getNextDateString(currentHisab.date));
     }
   };
 
@@ -346,6 +362,27 @@ const StockManager = ({ hisabs, hisabAccounts, hisabTransactions, onSubmitHisab,
       setIsHistoryVisible(false);
   };
   
+  const handleEditHisabFromHistory = (date) => {
+      if (window.confirm('Are you sure you want to edit this submitted hisab? It will be moved back to a draft.')) {
+        // Find the hisab to edit from the master list.
+        const hisabToEdit = hisabs.find(h => h.date === date);
+
+        if (hisabToEdit) {
+            // Create an editable deep copy and immediately set it as the current hisab.
+            // This ensures the UI becomes editable instantly.
+            const editableHisab = { ...JSON.parse(JSON.stringify(hisabToEdit)), status: 'draft' };
+            setCurrentHisab(editableHisab);
+        }
+
+        // Update the master list in the parent component.
+        onUpdateHisabStatus(date, 'draft');
+        
+        // Switch the view from history back to the entry form for the selected date.
+        setSelectedDate(date);
+        setIsHistoryVisible(false);
+      }
+  };
+
   const hisabAccountsWithBalance = useMemo(() => {
     return hisabAccounts.map(account => {
         const accountTransactions = hisabTransactions.filter(t => t.accountId === account.id);
@@ -416,7 +453,11 @@ const StockManager = ({ hisabs, hisabAccounts, hisabTransactions, onSubmitHisab,
                 )
             ),
             isHistoryVisible && (
-                React.createElement(HisabHistory, { hisabs: hisabs, onSelectHisab: handleSelectHisabFromHistory })
+                React.createElement(HisabHistory, { 
+                    hisabs: hisabs, 
+                    onSelectHisab: handleSelectHisabFromHistory,
+                    onEditHisab: handleEditHisabFromHistory
+                })
             )
         )
       ),
