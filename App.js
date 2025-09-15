@@ -265,7 +265,7 @@ const App = () => {
             React.createElement(Header, { theme: theme, toggleTheme: toggleTheme }),
             React.createElement(Nav, { activeView: activeView, setActiveView: setActiveView }),
             React.createElement('main', { className: "py-4 sm:p-6 sm:container sm:mx-auto pb-20 sm:pb-6" },
-                renderView()
+                React.createElement('div', { className: 'px-4 sm:px-0' }, renderView())
             )
         )
     );
