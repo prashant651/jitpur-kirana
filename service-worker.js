@@ -1,6 +1,6 @@
 // A simple service worker for caching the app shell to enable offline functionality.
 
-const CACHE_NAME = 'jitpur-kirana-cache-v11'; // Bumped version to ensure new worker installs
+const CACHE_NAME = 'jitpur-kirana-cache-v12'; // Bumped version to ensure new worker installs
 const urlsToCache = [
   './',
   './index.html',

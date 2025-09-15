@@ -40,7 +40,7 @@ const Nav = ({ activeView, setActiveView }) => {
                renderNavItems([homeButton, ...mainButtons, navItems.find(item => item.id === 'contacts')].filter(Boolean))
             ),
             // Desktop View (Top Tab Bar)
-            React.createElement('div', { className: "container mx-auto px-2 sm:px-4 hidden sm:block" },
+            React.createElement('div', { className: "px-4 sm:px-6 hidden sm:block" },
                  React.createElement('div', { className: "flex -mb-px overflow-x-auto" },
                     renderNavItems(navItems)
                 )

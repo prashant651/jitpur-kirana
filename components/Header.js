@@ -24,7 +24,7 @@ const Header = ({ theme, toggleTheme }) => {
 
     return (
         React.createElement('header', { className: "bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-30" },
-            React.createElement('div', { className: "px-4 sm:px-6 py-3 flex justify-between items-center sm:container sm:mx-auto" },
+            React.createElement('div', { className: "px-4 sm:px-6 py-3 flex justify-between items-center" },
                 React.createElement('div', { className: "flex items-center gap-3" },
                     React.createElement(Logo, null),
                     React.createElement('h1', { className: "text-xl font-bold text-gray-900 dark:text-white hidden sm:block" },
