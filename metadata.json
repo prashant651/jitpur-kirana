@@ -1,0 +1,7 @@
+{
+  "name": "Jitpur Kirana",
+  "description": "A business management application for Jitpur Kirana to handle customer/supplier accounts, cheque management, and daily stock calculations.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
