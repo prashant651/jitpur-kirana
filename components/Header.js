@@ -36,19 +36,16 @@ const Header = ({ theme, toggleTheme }) => {
     const previousDateRef = React.useRef(new Date().getDate());
 
     React.useEffect(() => {
-        // Function to update Nepali date
         const updateNepaliDate = () => {
             const todayBS = getTodayBS();
             const formattedDate = `${bsMonthNames[todayBS.month - 1]} ${todayBS.day}, ${todayBS.year}`;
             setNepaliDate(formattedDate);
         };
 
-        // Set initial date
         updateNepaliDate();
 
         const timerId = setInterval(() => {
             const now = new Date();
-            // Check if the Gregorian date has changed to trigger a Nepali date update
             if (now.getDate() !== previousDateRef.current) {
                 updateNepaliDate();
                 previousDateRef.current = now.getDate();
@@ -57,7 +54,7 @@ const Header = ({ theme, toggleTheme }) => {
         }, 1000);
 
         return () => clearInterval(timerId);
-    }, []); // Empty dependency array ensures this effect runs only once.
+    }, []);
     
     const formattedTime = currentTime.toLocaleString('en-US', {
         hour: '2-digit',
@@ -67,7 +64,7 @@ const Header = ({ theme, toggleTheme }) => {
     });
 
     return (
-        React.createElement('header', { className: "bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-30" },
+        React.createElement('header', { className: "bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-30 pt-[env(safe-area-inset-top)]" },
             React.createElement('div', { className: "px-4 sm:px-6 py-3 flex justify-between items-center" },
                 React.createElement('div', { className: "flex items-center gap-3" },
                     React.createElement(Logo, null),

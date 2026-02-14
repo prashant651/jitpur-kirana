@@ -1,6 +1,6 @@
 // A simple service worker for caching the app shell to enable offline functionality.
 
-const CACHE_NAME = 'jitpur-kirana-cache-v12'; // Bumped version to ensure new worker installs
+const CACHE_NAME = 'jitpur-kirana-cache-v13'; // Bumped version to ensure new worker installs
 const urlsToCache = [
   './',
   './index.html',
@@ -37,7 +37,7 @@ const urlsToCache = [
   './components/Header.js',
   './components/HisabAccountsLedger.js',
   './components/HomeDashboard.js',
-  './components/IdeaCard.js', // This is the AccountCard
+  './components/IdeaCard.js', 
   './components/Loader.js',
   './components/Nav.js',
   './components/PlaceholderView.js',
@@ -58,24 +58,20 @@ const urlsToCache = [
   'https://aistudiocdn.com/@google/genai@1.19.0/index.js'
 ];
 
-// Install event: open a cache and add the app shell files to it.
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Opened cache and caching app shell');
-        // Use addAll with a catch to log errors for specific failed URLs
         return cache.addAll(urlsToCache).catch(error => {
             console.error('Failed to cache one or more URLs:', error);
         });
       })
-      .then(() => self.skipWaiting()) // Force the waiting service worker to become the active service worker.
+      .then(() => self.skipWaiting())
   );
 });
 
-// Fetch event: serve cached content when offline, with a fallback for SPA navigation.
 self.addEventListener('fetch', event => {
-  // We only want to handle GET requests.
   if (event.request.method !== 'GET') {
     return;
   }
@@ -83,23 +79,15 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // If we have a match in the cache, return it.
         if (response) {
           return response;
         }
         
-        // Otherwise, fetch from the network.
-        // And if successful, cache the new response for next time.
         return fetch(event.request).then(networkResponse => {
-            // Check if we received a valid response
             if(!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic' && !networkResponse.type.endsWith('cors')) {
                 return networkResponse;
             }
             
-            // IMPORTANT: Clone the response. A response is a stream
-            // and because we want the browser to consume the response
-            // as well as the cache consuming the response, we need
-            // to clone it so we have two streams.
             var responseToCache = networkResponse.clone();
 
             caches.open(CACHE_NAME)
@@ -109,8 +97,6 @@ self.addEventListener('fetch', event => {
 
             return networkResponse;
         }).catch(() => {
-          // If the network fails and it's a navigation request (e.g., loading a page),
-          // return the main app shell page. This is crucial for SPAs.
           if (event.request.mode === 'navigate') {
             return caches.match('./index.html');
           }
@@ -119,21 +105,18 @@ self.addEventListener('fetch', event => {
   );
 });
 
-
-// Activate event: clean up old caches.
 self.addEventListener('activate', event => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          // If a cache is not in our whitelist, delete it.
           if (cacheWhitelist.indexOf(cacheName) === -1) {
             console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => self.clients.claim()) // Take control of all pages under its scope immediately.
+    }).then(() => self.clients.claim())
   );
 });
