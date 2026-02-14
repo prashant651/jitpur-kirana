@@ -1,6 +1,6 @@
 // A simple service worker for caching the app shell to enable offline functionality.
 
-const CACHE_NAME = 'jitpur-kirana-cache-v19'; // Bumped for mobile table scrolling fix
+const CACHE_NAME = 'jitpur-kirana-cache-v20'; // Bumped for PDF export fix
 const urlsToCache = [
   './',
   './index.html',

@@ -5,6 +5,115 @@ import { CashBalanceSheet } from './CashBalanceSheet.js';
 import { commonItems } from '../services/mock-data.js';
 import HisabAccountsLedger from './HisabAccountsLedger.js';
 
+const generateHisabPDF = (hisab, hisabAccounts = []) => {
+    const doc = new jspdf.jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Helper to find customer name
+    const getCustomerName = (id) => {
+        const acc = hisabAccounts.find(a => a.id === id);
+        return acc ? acc.name : 'Unknown';
+    };
+
+    // Header
+    doc.setFontSize(20);
+    doc.setTextColor(29, 78, 216); // Blue-700
+    doc.text('Jitpur Kirana', pageWidth / 2, 15, { align: 'center' });
+    
+    doc.setFontSize(14);
+    doc.setTextColor(55, 65, 81); // Gray-700
+    doc.text(`Daily Hisab Report: ${hisab.date}`, pageWidth / 2, 23, { align: 'center' });
+
+    // Section 1: Stock Items
+    doc.setFontSize(12);
+    doc.text('Stock Sales Calculation', 14, 32);
+    
+    const stockHead = [['Item Name', 'Opening', 'Closing', 'Sold', 'Rate', 'Total']];
+    const stockBody = hisab.stockItems
+        .filter(item => (item.openingQty - item.closingQty) > 0)
+        .map(item => {
+            const sold = item.openingQty - item.closingQty;
+            return [
+                item.name,
+                item.openingQty,
+                item.closingQty,
+                sold,
+                item.rate.toLocaleString('en-IN'),
+                (sold * item.rate).toLocaleString('en-IN')
+            ];
+        });
+
+    const totalSales = hisab.stockItems.reduce((total, item) => {
+        const soldQty = item.openingQty - item.closingQty;
+        return total + (soldQty * item.rate);
+    }, 0);
+
+    doc.autoTable({
+        startY: 35,
+        head: stockHead,
+        body: stockBody,
+        theme: 'grid',
+        headStyles: { fillColor: [29, 78, 216] },
+        foot: [['', '', '', '', 'Total Sales:', `Rs ${totalSales.toLocaleString('en-IN')}`]],
+        footStyles: { fillColor: [243, 244, 246], textColor: [0, 0, 0], fontStyle: 'bold' }
+    });
+
+    let currentY = doc.lastAutoTable.finalY + 10;
+
+    // Section 2: Cash Balancing Details
+    doc.setFontSize(12);
+    doc.text('Cash Balancing Details', 14, currentY);
+    currentY += 5;
+
+    // Side-by-side collections and expenses if they fit, or stacked
+    // Table for Cash Received
+    const cashRecBody = hisab.balance.cashTransactions.map(tx => [getCustomerName(tx.customerId), tx.amount.toLocaleString('en-IN')]);
+    doc.autoTable({
+        startY: currentY,
+        head: [['Cash Received From', 'Amount']],
+        body: cashRecBody.length ? cashRecBody : [['No cash received', '0']],
+        theme: 'striped',
+        headStyles: { fillColor: [22, 163, 74] }, // Green-600
+        margin: { right: pageWidth / 2 + 2 }
+    });
+
+    // Table for Credit Sales (Udharo)
+    const creditSalesBody = hisab.balance.creditTransactions.map(tx => [getCustomerName(tx.customerId), tx.amount.toLocaleString('en-IN')]);
+    doc.autoTable({
+        startY: currentY,
+        head: [['Credit Sales (Udharo)', 'Amount']],
+        body: creditSalesBody.length ? creditSalesBody : [['No credit sales', '0']],
+        theme: 'striped',
+        headStyles: { fillColor: [220, 38, 38] }, // Red-600
+        margin: { left: pageWidth / 2 + 2 }
+    });
+
+    currentY = Math.max(doc.lastAutoTable.finalY, doc.previousAutoTable ? doc.previousAutoTable.finalY : 0) + 10;
+
+    // Final Summary Table
+    const summaryHead = [['Description', 'Amount (Rs)']];
+    const summaryBody = [
+        ['Total Sales Income', totalSales.toLocaleString('en-IN')],
+        ['Total Cash Received', hisab.balance.cashTransactions.reduce((s, t) => s + t.amount, 0).toLocaleString('en-IN')],
+        ['Cheques Received', hisab.balance.chequesReceived.toLocaleString('en-IN')],
+        ['---', '---'],
+        ['Total Expenses', hisab.balance.expenses.toLocaleString('en-IN')],
+        ['Total Credit Sales', hisab.balance.creditTransactions.reduce((s, t) => s + t.amount, 0).toLocaleString('en-IN')],
+        ['Online Payments', hisab.balance.onlinePayments.toLocaleString('en-IN')],
+        ['Cheques on Hand', hisab.balance.chequesOnHand.toLocaleString('en-IN')],
+        ['Cash on Hand', hisab.balance.cashOnHand.toLocaleString('en-IN')]
+    ];
+
+    doc.autoTable({
+        startY: currentY,
+        head: summaryHead,
+        body: summaryBody,
+        theme: 'grid',
+        headStyles: { fillColor: [75, 85, 99] }
+    });
+
+    doc.save(`Hisab_Report_${hisab.date}.pdf`);
+};
 
 const SalesReports = ({ hisabs }) => {
     const [selectedItemName, setSelectedItemName] = useState('');
@@ -211,7 +320,7 @@ const SalesReports = ({ hisabs }) => {
 };
 
 
-const HisabHistory = ({ hisabs, onSelectHisab, onEditHisab }) => {
+const HisabHistory = ({ hisabs, onSelectHisab, onEditHisab, onDownloadPDF }) => {
     const submittedHisabs = hisabs.filter(h => h.status === 'submitted').sort((a,b) => b.date.localeCompare(a.date));
 
     return (
@@ -231,6 +340,11 @@ const HisabHistory = ({ hisabs, onSelectHisab, onEditHisab }) => {
                                 )
                             ),
                             React.createElement('div', { className: "flex items-center gap-2" },
+                                React.createElement('button', { onClick: () => onDownloadPDF(hisab), className: "p-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 dark:bg-blue-900/40 dark:text-blue-400 dark:hover:bg-blue-900/60 transition-colors", "aria-label": "Download PDF" },
+                                    React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-5 w-5", viewBox: "0 0 20 20", fill: "currentColor" },
+                                        React.createElement('path', { fillRule: "evenodd", d: "M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z", clipRule: "evenodd" })
+                                    )
+                                ),
                                 React.createElement('button', { onClick: () => onEditHisab(hisab.date), className: "px-3 py-1 bg-yellow-500 text-white font-semibold rounded-md hover:bg-yellow-600 transition-colors text-sm" },
                                     "Edit"
                                 ),
@@ -364,22 +478,21 @@ const StockManager = ({ hisabs, hisabAccounts, hisabTransactions, onSubmitHisab,
   
   const handleEditHisabFromHistory = (date) => {
       if (window.confirm('Are you sure you want to edit this submitted hisab? It will be moved back to a draft.')) {
-        // Find the hisab to edit from the master list.
         const hisabToEdit = hisabs.find(h => h.date === date);
-
         if (hisabToEdit) {
-            // Create an editable deep copy and immediately set it as the current hisab.
-            // This ensures the UI becomes editable instantly.
             const editableHisab = { ...JSON.parse(JSON.stringify(hisabToEdit)), status: 'draft' };
             setCurrentHisab(editableHisab);
         }
-
-        // Update the master list in the parent component.
         onUpdateHisabStatus(date, 'draft');
-        
-        // Switch the view from history back to the entry form for the selected date.
         setSelectedDate(date);
         setIsHistoryVisible(false);
+      }
+  };
+
+  const handleDownloadPDF = (hisabToDownload) => {
+      const targetHisab = hisabToDownload || currentHisab;
+      if (targetHisab) {
+          generateHisabPDF(targetHisab, hisabAccounts);
       }
   };
 
@@ -421,14 +534,23 @@ const StockManager = ({ hisabs, hisabAccounts, hisabTransactions, onSubmitHisab,
                     disabled: isHistoryVisible }
                 ),
                 React.createElement('button', { onClick: () => setIsHistoryVisible(!isHistoryVisible), className: "px-3 py-2 bg-gray-200 text-gray-800 font-bold rounded-lg hover:bg-gray-300 transition-colors text-sm dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500" },
-                    isHistoryVisible ? 'Go to Entry' : 'View History'
+                    isHistoryVisible ? 'Go to Entry' : 'History'
                 ),
                 !isHistoryVisible && (
-                    React.createElement('button', 
-                        { onClick: handleSubmit,
-                        disabled: balanceDifference !== 0 || isReadOnly,
-                        className: "px-5 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors text-sm shadow disabled:bg-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-600" },
-                        isReadOnly ? 'Submitted' : 'Finalize & Submit'
+                    isReadOnly ? (
+                        React.createElement('button', { onClick: () => handleDownloadPDF(), className: "px-4 py-2 bg-blue-100 text-blue-700 font-bold rounded-lg hover:bg-blue-200 transition-colors text-sm dark:bg-blue-900/40 dark:text-blue-300 flex items-center gap-2" },
+                            React.createElement('svg', { xmlns: "http://www.w3.org/2000/svg", className: "h-4 w-4", viewBox: "0 0 20 20", fill: "currentColor" },
+                                React.createElement('path', { fillRule: "evenodd", d: "M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z", clipRule: "evenodd" })
+                            ),
+                            "Download PDF"
+                        )
+                    ) : (
+                        React.createElement('button', 
+                            { onClick: handleSubmit,
+                            disabled: balanceDifference !== 0,
+                            className: "px-5 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors text-sm shadow disabled:bg-gray-400 disabled:cursor-not-allowed dark:disabled:bg-gray-600" },
+                            'Submit Hisab'
+                        )
                     )
                 )
                 )
@@ -456,7 +578,8 @@ const StockManager = ({ hisabs, hisabAccounts, hisabTransactions, onSubmitHisab,
                 React.createElement(HisabHistory, { 
                     hisabs: hisabs, 
                     onSelectHisab: handleSelectHisabFromHistory,
-                    onEditHisab: handleEditHisabFromHistory
+                    onEditHisab: handleEditHisabFromHistory,
+                    onDownloadPDF: handleDownloadPDF
                 })
             )
         )
