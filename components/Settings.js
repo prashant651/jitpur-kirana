@@ -80,48 +80,41 @@ const Settings = () => {
                 React.createElement('p', { className: "text-gray-500 mt-2" }, "Deployment & Cloud Sync")
             ),
 
-            // FIXED WALKTHROUGH FOR THE ERROR
-            React.createElement('div', { className: "bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border-2 border-red-100 dark:border-red-900/30" },
-                React.createElement('h2', { className: "text-xl font-bold mb-4 flex items-center gap-2 text-red-600 dark:text-red-400" }, 
-                    React.createElement('svg', { className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" })),
-                    "Fix: 'Didn't find Hosting config'"
+            // CLOUD SHELL REDIRECT FIX
+            React.createElement('div', { className: "bg-blue-600 text-white p-6 rounded-2xl shadow-lg border-2 border-blue-400" },
+                React.createElement('h2', { className: "text-xl font-bold mb-4 flex items-center gap-2" }, 
+                    React.createElement('svg', { className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M13 10V3L4 14h7v7l9-11h-7z" })),
+                    "Fix: Localhost Redirect in Cloud Shell"
                 ),
-                React.createElement('p', { className: "text-sm text-gray-600 dark:text-gray-400 mb-4" }, 
-                    "You saw that error because the CLI needs to initialize Hosting first. Follow these exact steps in order:"
+                React.createElement('p', { className: "text-sm mb-4 opacity-90" }, 
+                    "If your browser shows 'This site can't be reached' at localhost:9005 after GitHub login, do this:"
                 ),
                 React.createElement('div', { className: "space-y-4" },
-                    React.createElement('div', { className: "p-4 bg-gray-900 text-green-400 rounded-xl font-mono text-sm overflow-x-auto select-all shadow-inner" }, 
-                        "firebase init hosting"
+                    React.createElement('div', { className: "flex gap-3" }, 
+                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold" }, "1"),
+                        React.createElement('p', { className: "text-sm" }, "Copy the ", React.createElement('span', { className: "font-bold" }, "entire URL"), " from your browser's address bar (the one that failed).")
                     ),
-                    React.createElement('div', { className: "space-y-3 text-sm" },
-                        React.createElement('div', { className: "flex gap-2" }, 
-                            React.createElement('span', { className: "text-red-500 font-bold" }, "1."),
-                            React.createElement('p', null, "Select: ", React.createElement('span', { className: "font-mono text-blue-500" }, "Use an existing project"), " -> ", React.createElement('span', { className: "font-mono text-blue-500" }, "jitpur-kirana"))
-                        ),
-                        React.createElement('div', { className: "flex gap-2" }, 
-                            React.createElement('span', { className: "text-red-500 font-bold" }, "2."),
-                            React.createElement('div', null,
-                                React.createElement('p', null, "It will ask for public directory. Type: ", React.createElement('span', { className: "font-mono font-bold" }, ".")),
-                                React.createElement('p', { className: "text-xs text-gray-400" }, "(Yes, just a single dot/period)")
-                            )
-                        ),
-                        React.createElement('div', { className: "flex gap-2" }, 
-                            React.createElement('span', { className: "text-red-500 font-bold" }, "3."),
-                            React.createElement('p', null, "Configure as single-page app? Type ", React.createElement('span', { className: "font-bold" }, "y"))
-                        ),
-                        React.createElement('div', { className: "flex gap-2" }, 
-                            React.createElement('span', { className: "text-red-500 font-bold" }, "4."),
-                            React.createElement('p', null, "Set up automatic builds with GitHub? Type ", React.createElement('span', { className: "font-bold text-green-500" }, "y"))
-                        ),
-                        React.createElement('div', { className: "flex gap-2" }, 
-                            React.createElement('span', { className: "text-red-500 font-bold" }, "5."),
-                            React.createElement('p', null, "It will then give you a link to log into GitHub. Follow that and you are done!")
+                    React.createElement('div', { className: "flex gap-3" }, 
+                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold" }, "2"),
+                        React.createElement('p', { className: "text-sm" }, "Open a ", React.createElement('span', { className: "font-bold underline" }, "Second Terminal Tab"), " in Cloud Shell (click the + icon).")
+                    ),
+                    React.createElement('div', { className: "flex gap-3" }, 
+                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold" }, "3"),
+                        React.createElement('div', { className: "flex-1" },
+                             React.createElement('p', { className: "text-sm mb-2" }, "Type this command and paste your URL:"),
+                             React.createElement('div', { className: "p-3 bg-black/30 rounded-lg font-mono text-xs break-all border border-white/20" }, 
+                                'curl "PASTE_YOUR_URL_HERE"'
+                             )
                         )
+                    ),
+                    React.createElement('div', { className: "flex gap-3" }, 
+                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold" }, "4"),
+                        React.createElement('p', { className: "text-sm" }, "Press Enter. Then check the ", React.createElement('span', { className: "font-bold" }, "First Terminal Tab"), "—it will show success!")
                     )
                 )
             ),
 
-            // 2. Cloud Status
+            // Cloud Status
             React.createElement('div', { className: `p-6 rounded-2xl border-2 shadow-sm transition-all ${syncError ? 'bg-red-50 border-red-200 dark:bg-red-900/10 dark:border-red-900' : 'bg-green-50 border-green-200 dark:bg-green-900/10 dark:border-green-900'}` },
                 React.createElement('div', { className: "flex items-center justify-between" },
                     React.createElement('div', null,
@@ -132,7 +125,7 @@ const Settings = () => {
                 )
             ),
 
-            // 3. Quick Actions
+            // Quick Actions
             React.createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 gap-4" },
                 deferredPrompt && React.createElement(ActionButton, {
                     label: "Add to Home Screen",
@@ -148,7 +141,7 @@ const Settings = () => {
                 })
             ),
 
-            // 4. Footer
+            // Footer
             React.createElement('div', { className: "text-center space-y-2" },
                 React.createElement('p', { className: "text-xs text-gray-400" }, "Project ID: jitpur-kirana"),
                 React.createElement('a', { 
