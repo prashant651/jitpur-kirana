@@ -3,7 +3,7 @@ import { getTodayBS, bsMonthNames } from '../services/bs-date-utils.js';
 
 const Header = ({ theme, toggleTheme }) => {
     const Logo = () => (
-      React.createElement('svg', { width: "28", height: "28", viewBox: "0 0 40 40", fill: "none", xmlns: "http://www.w3.org/2000/svg" },
+      React.createElement('svg', { width: "32", height: "32", viewBox: "0 0 40 40", fill: "none", xmlns: "http://www.w3.org/2000/svg" },
         React.createElement('text', {
           x: "50%",
           y: "50%",
@@ -65,20 +65,20 @@ const Header = ({ theme, toggleTheme }) => {
     return (
         React.createElement('header', { className: "bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-30 pt-safe-top border-b dark:border-gray-700" },
             React.createElement('div', { className: "px-4 py-2 flex items-center justify-between" },
-                React.createElement('div', { className: "flex items-center gap-2 flex-1 min-w-0" },
+                React.createElement('div', { className: "flex items-center gap-3 flex-1 min-w-0" },
                     React.createElement(Logo, null),
                     React.createElement('div', { className: "flex flex-col min-w-0" },
-                        React.createElement('h1', { className: "text-sm sm:text-base font-bold text-gray-900 dark:text-white leading-none truncate" },
+                        React.createElement('h1', { className: "text-sm sm:text-base font-bold text-gray-900 dark:text-white leading-tight truncate" },
                             "Jitpur Kirana"
                         ),
-                        React.createElement('span', { className: "text-[9px] sm:text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5" },
+                        React.createElement('span', { className: "text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-mono" },
                             `${nepaliDate} | ${formattedTime}`
                         )
                     )
                 ),
                 React.createElement('button', 
                   { onClick: toggleTheme, 
-                  className: "ml-2 p-1.5 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0",
+                  className: "ml-2 p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shrink-0",
                   "aria-label": "Toggle theme"
                 },
                     theme === 'light' ? React.createElement(MoonIcon, null) : React.createElement(SunIcon, null)
