@@ -1,7 +1,10 @@
 import React from 'react';
 import { getTodayBS, bsMonthNames } from '../services/bs-date-utils.js';
+import { getFirebaseDB } from '../services/firebase.js';
 
 const Header = ({ theme, toggleTheme }) => {
+    const isSynced = !!getFirebaseDB();
+
     const Logo = () => (
       React.createElement('svg', { width: "32", height: "32", viewBox: "0 0 40 40", fill: "none", xmlns: "http://www.w3.org/2000/svg" },
         React.createElement('text', {
@@ -68,8 +71,11 @@ const Header = ({ theme, toggleTheme }) => {
                 React.createElement('div', { className: "flex items-center gap-3 flex-1 min-w-0" },
                     React.createElement(Logo, null),
                     React.createElement('div', { className: "flex flex-col min-w-0" },
-                        React.createElement('h1', { className: "text-sm sm:text-base font-bold text-gray-900 dark:text-white leading-tight truncate" },
-                            "Jitpur Kirana"
+                        React.createElement('div', { className: "flex items-center gap-2" },
+                            React.createElement('h1', { className: "text-sm sm:text-base font-bold text-gray-900 dark:text-white leading-tight truncate" },
+                                "Jitpur Kirana"
+                            ),
+                            isSynced && React.createElement('div', { title: "Cloud Sync Enabled", className: "w-2 h-2 bg-green-500 rounded-full animate-pulse" })
                         ),
                         React.createElement('span', { className: "text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 font-mono" },
                             `${nepaliDate} | ${formattedTime}`
