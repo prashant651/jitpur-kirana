@@ -80,36 +80,26 @@ const Settings = () => {
                 React.createElement('p', { className: "text-gray-500 mt-2" }, "Deployment & Cloud Sync")
             ),
 
-            // CLOUD SHELL REDIRECT FIX
-            React.createElement('div', { className: "bg-blue-600 text-white p-6 rounded-2xl shadow-lg border-2 border-blue-400" },
+            // UPDATED: GITHUB REPO NAME FIX WITH CORRECT USERNAME
+            React.createElement('div', { className: "bg-red-600 text-white p-6 rounded-2xl shadow-lg border-2 border-red-400" },
                 React.createElement('h2', { className: "text-xl font-bold mb-4 flex items-center gap-2" }, 
-                    React.createElement('svg', { className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M13 10V3L4 14h7v7l9-11h-7z" })),
-                    "Fix: Localhost Redirect in Cloud Shell"
+                    React.createElement('svg', { className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" })),
+                    "Fix: 'You must provide a valid value'"
                 ),
-                React.createElement('p', { className: "text-sm mb-4 opacity-90" }, 
-                    "If your browser shows 'This site can't be reached' at localhost:9005 after GitHub login, do this:"
+                React.createElement('p', { className: "text-sm mb-4" }, 
+                    "Your GitHub username is confirmed as ", React.createElement('span', { className: "font-black underline" }, "prashant651"), ". If the CLI still rejects the name, run these commands first:"
                 ),
                 React.createElement('div', { className: "space-y-4" },
-                    React.createElement('div', { className: "flex gap-3" }, 
-                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold" }, "1"),
-                        React.createElement('p', { className: "text-sm" }, "Copy the ", React.createElement('span', { className: "font-bold" }, "entire URL"), " from your browser's address bar (the one that failed).")
+                    React.createElement('div', { className: "bg-black/30 p-3 rounded-lg font-mono text-xs space-y-1 border border-white/20" },
+                        React.createElement('p', null, "git init"),
+                        React.createElement('p', null, "git remote add origin https://github.com/prashant651/jitpur-kirana.git")
                     ),
-                    React.createElement('div', { className: "flex gap-3" }, 
-                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold" }, "2"),
-                        React.createElement('p', { className: "text-sm" }, "Open a ", React.createElement('span', { className: "font-bold underline" }, "Second Terminal Tab"), " in Cloud Shell (click the + icon).")
+                    React.createElement('div', { className: "flex gap-3 items-center" }, 
+                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white text-red-600 flex items-center justify-center text-xs font-bold" }, "!"),
+                        React.createElement('p', { className: "text-sm" }, "Now try typing the repository name again:")
                     ),
-                    React.createElement('div', { className: "flex gap-3" }, 
-                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold" }, "3"),
-                        React.createElement('div', { className: "flex-1" },
-                             React.createElement('p', { className: "text-sm mb-2" }, "Type this command and paste your URL:"),
-                             React.createElement('div', { className: "p-3 bg-black/30 rounded-lg font-mono text-xs break-all border border-white/20" }, 
-                                'curl "PASTE_YOUR_URL_HERE"'
-                             )
-                        )
-                    ),
-                    React.createElement('div', { className: "flex gap-3" }, 
-                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold" }, "4"),
-                        React.createElement('p', { className: "text-sm" }, "Press Enter. Then check the ", React.createElement('span', { className: "font-bold" }, "First Terminal Tab"), "—it will show success!")
+                    React.createElement('div', { className: "p-4 bg-white text-red-600 rounded-xl font-mono text-lg font-black text-center shadow-inner" }, 
+                        "prashant651/jitpur-kirana"
                     )
                 )
             ),
