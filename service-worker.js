@@ -1,6 +1,6 @@
 // A simple service worker for caching the app shell to enable offline functionality.
 
-const CACHE_NAME = 'jitpur-kirana-cache-v13'; // Bumped version to ensure new worker installs
+const CACHE_NAME = 'jitpur-kirana-cache-v15'; // Bumped version to force updates
 const urlsToCache = [
   './',
   './index.html',
@@ -91,32 +91,3 @@ self.addEventListener('fetch', event => {
             var responseToCache = networkResponse.clone();
 
             caches.open(CACHE_NAME)
-                .then(function(cache) {
-                    cache.put(event.request, responseToCache);
-                });
-
-            return networkResponse;
-        }).catch(() => {
-          if (event.request.mode === 'navigate') {
-            return caches.match('./index.html');
-          }
-        });
-      })
-  );
-});
-
-self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
