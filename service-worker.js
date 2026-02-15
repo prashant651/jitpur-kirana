@@ -1,5 +1,6 @@
-// Jitpur Kirana Service Worker v25
-const CACHE_NAME = 'jitpur-kirana-cache-v25';
+
+// Jitpur Kirana Service Worker v26 (Cache Buster)
+const CACHE_NAME = 'jitpur-kirana-cache-v26';
 const urlsToCache = [
   '/',
   '/index.html',
