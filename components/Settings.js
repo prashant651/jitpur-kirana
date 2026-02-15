@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { getSyncError } from '../services/firebase.js';
 
@@ -23,39 +24,14 @@ const ActionButton = ({ onClick, label, icon, color = 'blue', disabled = false }
 };
 
 const Settings = () => {
-    const [deferredPrompt, setDeferredPrompt] = useState(null);
     const [syncError, setSyncError] = useState(null);
 
     useEffect(() => {
-        const handleBeforeInstallPrompt = (e) => {
-            e.preventDefault();
-            setDeferredPrompt(e);
-        };
-        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
         const errorInterval = setInterval(() => {
             setSyncError(getSyncError());
         }, 1000);
-
-        return () => {
-            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-            clearInterval(errorInterval);
-        };
+        return () => clearInterval(errorInterval);
     }, []);
-
-    const forceRefresh = async () => {
-        if ('serviceWorker' in navigator) {
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            for (let registration of registrations) {
-                await registration.unregister();
-            }
-        }
-        const cacheNames = await caches.keys();
-        for (let name of cacheNames) {
-            await caches.delete(name);
-        }
-        window.location.reload(true);
-    };
 
     const handleBackup = () => {
         const DATA_KEYS = [
@@ -84,60 +60,37 @@ const Settings = () => {
     return (
         React.createElement('div', { className: "max-w-2xl mx-auto pb-24 space-y-8" },
             React.createElement('div', { className: "text-center" },
-                React.createElement('h1', { className: "text-4xl font-black text-gray-900 dark:text-white" }, "Admin Center"),
-                React.createElement('p', { className: "text-gray-500 mt-2" }, "Security & Maintenance")
+                React.createElement('h1', { className: "text-4xl font-black text-gray-900 dark:text-white" }, "Settings"),
+                React.createElement('p', { className: "text-gray-500 mt-2" }, "Manage your business data and security")
             ),
 
-            // EMERGENCY CACHE BUSTER
-            React.createElement('div', { className: "bg-red-600 text-white p-6 rounded-2xl shadow-xl border-b-4 border-red-800" },
-                React.createElement('h2', { className: "text-xl font-bold flex items-center gap-2 mb-2" }, 
-                    React.createElement('svg', { className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" })),
-                    "Force App Update"
-                ),
-                React.createElement('p', { className: "text-sm opacity-90 mb-4" }, 
-                    "If you still see the Firebase 'Welcome' page, this will clear all local memory and force the app to reload from the cloud."
-                ),
-                React.createElement('button', { 
-                    onClick: forceRefresh,
-                    className: "w-full bg-white text-red-600 py-3 rounded-xl font-bold shadow-md hover:bg-gray-100 transition-all active:scale-95" 
-                }, "Reset & Force Reload")
-            ),
-
-            // SECURITY LOCKDOWN (API KEY)
-            React.createElement('div', { className: "bg-white dark:bg-gray-800 border-2 border-amber-500 rounded-2xl p-6 shadow-sm overflow-hidden relative" },
-                React.createElement('div', { className: "absolute top-0 right-0 bg-amber-500 text-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest" }, "Security Alert"),
-                React.createElement('h2', { className: "text-lg font-bold text-amber-600 mb-2 flex items-center gap-2" }, 
-                    React.createElement('svg', { className: "h-5 w-5", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" })),
-                    "API Key Protection"
-                ),
-                React.createElement('p', { className: "text-sm text-gray-600 dark:text-gray-400 mb-4" }, 
-                    "To stop security emails, restrict your key to the domain below in Google Cloud Console."
-                ),
-                React.createElement('div', { className: "bg-gray-50 dark:bg-gray-900/50 p-4 rounded-xl text-sm border border-gray-100 dark:border-gray-700" },
-                    React.createElement('div', { className: "mt-2 flex items-center justify-between bg-white dark:bg-gray-800 p-2 rounded border font-mono text-xs" },
-                        "jitpur-kirana.web.app/*",
-                        React.createElement('button', { 
-                            onClick: () => { navigator.clipboard.writeText('jitpur-kirana.web.app/*'); alert('Copied!'); },
-                            className: "text-blue-600 font-bold uppercase text-[10px]" 
-                        }, "Copy")
-                    )
+            React.createElement('div', { className: "bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-2xl p-6 shadow-sm" },
+                React.createElement('h2', { className: "text-lg font-bold mb-4" }, "Data Management"),
+                React.createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 gap-4" },
+                    React.createElement(ActionButton, {
+                        label: "Export Backup",
+                        color: "indigo",
+                        icon: React.createElement('svg', { className: "h-5 w-5", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" })),
+                        onClick: handleBackup
+                    }),
+                    React.createElement(ActionButton, {
+                        label: syncError ? "Sync Error" : "Cloud Sync Active",
+                        color: syncError ? "red" : "green",
+                        icon: React.createElement('div', { className: `h-3 w-3 rounded-full bg-white ${syncError ? '' : 'animate-pulse'}` }),
+                        disabled: true
+                    })
                 )
             ),
 
-            // SYSTEM UTILITIES
-            React.createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 gap-4" },
-                React.createElement(ActionButton, {
-                    label: "Download Backup",
-                    color: "indigo",
-                    icon: React.createElement('svg', { className: "h-5 w-5", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" })),
-                    onClick: handleBackup
-                }),
-                React.createElement(ActionButton, {
-                    label: syncError ? "Sync Error" : "Cloud Active",
-                    color: syncError ? "red" : "gray",
-                    icon: React.createElement('div', { className: `h-3 w-3 rounded-full ${syncError ? 'bg-red-500' : 'bg-green-500'} animate-pulse` }),
-                    disabled: true
-                })
+            React.createElement('div', { className: "bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900 rounded-2xl p-6" },
+                React.createElement('h2', { className: "text-lg font-bold text-amber-700 dark:text-amber-400 mb-2" }, "Security Note"),
+                React.createElement('p', { className: "text-sm text-gray-600 dark:text-gray-400" }, 
+                    "To protect your data and stop security emails, please go to the Google Cloud Console and restrict your API Key to only work on 'jitpur-kirana.web.app'."
+                )
+            ),
+
+            React.createElement('div', { className: "text-center opacity-20 pt-8" },
+                React.createElement('p', { className: "text-[10px] font-mono" }, "app_v2.1.2_production")
             )
         )
     );
