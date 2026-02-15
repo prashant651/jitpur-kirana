@@ -1,80 +1,22 @@
 
-// Jitpur Kirana Service Worker v26 (Cache Buster)
-const CACHE_NAME = 'jitpur-kirana-cache-v26';
+// Jitpur Kirana Service Worker v27 (Emergency Refresh)
+const CACHE_NAME = 'jitpur-kirana-cache-v27';
 const urlsToCache = [
   '/',
   '/index.html',
   '/index.js',
+  '/App.js',
   '/favicon.svg',
   '/manifest.json',
-  
-  // App Core
-  '/App.js',
-  '/types.js',
-  
-  // Hooks
-  '/hooks/usePersistentState.js',
-  
-  // Services
-  '/services/bs-date-utils.js',
-  '/services/mock-data.js',
   '/services/firebase.js',
-
-  // Components
-  '/components/AccountForm.js',
-  '/components/AccountLedger.js',
-  '/components/Accounts.js',
-  '/components/CalendarView.js',
-  '/components/CashBalanceSheet.js',
-  '/components/ChequeCard.js',
-  '/components/ChequeForm.js',
-  '/components/ChequeManager.js',
-  '/components/Contacts.js',
-  '/components/Header.js',
-  '/components/HisabAccountsLedger.js',
-  '/components/HomeDashboard.js',
-  '/components/Nav.js',
-  '/components/Settings.js',
-  '/components/StockManager.js',
-  '/components/StockTable.js',
-  '/components/TransactionForm.js',
-  '/components/TransactionHistory.js',
-
-  // External Resources
-  'https://cdn.tailwindcss.com',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js',
-  
-  'https://aistudiocdn.com/react@19.1.1/index.js',
-  'https://aistudiocdn.com/react-dom@19.1.1/client.js'
+  '/services/bs-date-utils.js',
+  'https://cdn.tailwindcss.com'
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting(); // Force the new service worker to take over immediately
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => self.skipWaiting())
-  );
-});
-
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        return response || fetch(event.request).then(networkResponse => {
-            if(!networkResponse || networkResponse.status !== 200) return networkResponse;
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
-            return networkResponse;
-        }).catch(() => {
-          if (event.request.mode === 'navigate') return caches.match('/index.html');
-        });
-      })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
@@ -83,9 +25,30 @@ self.addEventListener('activate', event => {
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) return caches.delete(cacheName);
+          if (cacheName !== CACHE_NAME) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
         })
       );
     }).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+  
+  // Network first strategy for index.html to avoid ghosting the welcome page
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/index.html'))
+    );
+    return;
+  }
+
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      return response || fetch(event.request);
+    })
   );
 });
