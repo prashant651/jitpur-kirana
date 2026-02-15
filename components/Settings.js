@@ -7,8 +7,7 @@ const ActionButton = ({ onClick, label, icon, color = 'blue', disabled = false }
         red: 'bg-red-600 hover:bg-red-700 text-white',
         gray: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600',
         green: 'bg-green-600 hover:bg-green-700 text-white',
-        indigo: 'bg-indigo-600 hover:bg-indigo-700 text-white',
-        amber: 'bg-amber-500 hover:bg-amber-600 text-white'
+        orange: 'bg-orange-600 hover:bg-orange-700 text-white'
     };
 
     return React.createElement('button',
@@ -78,58 +77,63 @@ const Settings = () => {
     return (
         React.createElement('div', { className: "max-w-2xl mx-auto pb-24 space-y-8" },
             React.createElement('div', { className: "text-center" },
-                React.createElement('h1', { className: "text-4xl font-black text-gray-900 dark:text-white" }, "Settings"),
-                React.createElement('p', { className: "text-gray-500 mt-2" }, "System Health & Security Control")
+                React.createElement('h1', { className: "text-4xl font-black text-gray-900 dark:text-white" }, "System Admin"),
+                React.createElement('p', { className: "text-gray-500 mt-2" }, "Terminal Commands & Deployment")
             ),
 
-            // SECTION 1: RESOLVING THE "WELCOME PAGE"
-            React.createElement('div', { className: "bg-indigo-600 text-white p-6 rounded-2xl shadow-xl border-b-4 border-indigo-800" },
-                React.createElement('div', { className: "flex items-center gap-3 mb-4" },
-                    React.createElement('div', { className: "bg-white/20 p-2 rounded-lg" },
-                        React.createElement('svg', { className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" }))
-                    ),
-                    React.createElement('h2', { className: "text-xl font-bold" }, "Replace the 'Welcome' Page")
+            // URGENT TERMINAL FIX
+            React.createElement('div', { className: "bg-orange-600 text-white p-6 rounded-2xl shadow-xl border-2 border-orange-400" },
+                React.createElement('h2', { className: "text-xl font-bold mb-4 flex items-center gap-2" }, 
+                    React.createElement('svg', { className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" })),
+                    "Terminal: Force Update"
                 ),
                 React.createElement('p', { className: "text-sm mb-4 opacity-90" }, 
-                    "You see the placeholder page because you need to run the final deploy command. In your terminal, type:"
+                    "To fix the 'Welcome' page and bypass the 'Invalid Value' error, follow these exact steps in your terminal:"
                 ),
-                React.createElement('div', { className: "bg-black/30 p-4 rounded-xl font-mono text-sm border border-white/20 mb-4 flex justify-between items-center" },
-                    React.createElement('code', null, "firebase deploy"),
-                    React.createElement('button', { 
-                        onClick: () => { navigator.clipboard.writeText('firebase deploy'); alert('Command copied!'); },
-                        className: "text-[10px] bg-white/20 px-2 py-1 rounded uppercase font-bold hover:bg-white/40" 
-                    }, "Copy")
-                ),
-                React.createElement('p', { className: "text-xs text-indigo-200" }, 
-                    "Tip: If it asks for a project, choose 'jitpur-kirana'. If it asks for a directory, ensure it is the root '.'"
-                )
-            ),
-
-            // SECTION 2: RESOLVING THE GITHUB SECURITY EMAIL
-            React.createElement('div', { className: "bg-amber-50 dark:bg-amber-900/10 border-2 border-amber-500 rounded-2xl p-6 shadow-lg" },
-                React.createElement('div', { className: "flex items-start gap-4" },
-                    React.createElement('div', { className: "bg-amber-500 p-2 rounded-lg text-white" },
-                        React.createElement('svg', { className: "h-6 w-6", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" }))
+                React.createElement('div', { className: "space-y-4" },
+                    React.createElement('div', { className: "flex gap-3" }, 
+                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold" }, "1"),
+                        React.createElement('div', { className: "flex-1" },
+                             React.createElement('p', { className: "text-sm mb-1 font-bold" }, "Stop current command"),
+                             React.createElement('p', { className: "text-xs opacity-80" }, "Press Ctrl + C to stop the stuck GitHub setup.")
+                        )
                     ),
-                    React.createElement('div', { className: "flex-1" },
-                        React.createElement('h2', { className: "text-xl font-bold text-amber-700 dark:text-amber-400 mb-2" }, "Fix GitHub Security Alert"),
-                        React.createElement('p', { className: "text-sm text-amber-800 dark:text-amber-300 mb-4" }, 
-                            "The email you received is a standard warning. To resolve it permanently:"
-                        ),
-                        React.createElement('div', { className: "bg-white dark:bg-gray-900 p-4 rounded-xl space-y-3 text-sm border border-amber-200 dark:border-amber-800" },
-                            React.createElement('ol', { className: "list-decimal ml-4 space-y-2 text-gray-700 dark:text-gray-300" },
-                                React.createElement('li', null, React.createElement('a', { href: "https://console.cloud.google.com/apis/credentials", target: "_blank", className: "text-blue-600 underline font-bold" }, "Click here to open Google Credentials")),
-                                React.createElement('li', null, "Find 'API Key 1' (starts with AIzaSyAO)."),
-                                React.createElement('li', null, "Change 'Key restrictions' to 'Website'."),
-                                React.createElement('li', null, "Add: ", React.createElement('span', { className: "font-mono font-bold bg-gray-100 dark:bg-gray-800 px-1" }, "jitpur-kirana.web.app/*")),
-                                React.createElement('li', null, "Save. This 'locks' the key so only your app can use it.")
-                            )
+                    React.createElement('div', { className: "flex gap-3" }, 
+                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold" }, "2"),
+                        React.createElement('div', { className: "flex-1" },
+                             React.createElement('p', { className: "text-sm mb-1 font-bold" }, "Run Deployment"),
+                             React.createElement('div', { className: "p-3 bg-black/30 rounded-lg font-mono text-sm border border-white/10" }, "firebase deploy")
+                        )
+                    ),
+                    React.createElement('div', { className: "flex gap-3" }, 
+                        React.createElement('div', { className: "flex-shrink-0 w-6 h-6 rounded-full bg-white/20 text-white flex items-center justify-center text-xs font-bold" }, "3"),
+                        React.createElement('div', { className: "flex-1" },
+                             React.createElement('p', { className: "text-sm font-bold" }, "Refresh Browser"),
+                             React.createElement('p', { className: "text-xs opacity-80" }, "Once it says 'Deploy complete!', refresh jitpur-kirana.web.app")
                         )
                     )
                 )
             ),
 
-            // CLOUD ENGINE STATUS
+            // SECURITY ALERTS
+            React.createElement('div', { className: "bg-red-50 dark:bg-red-900/10 border-2 border-red-500 rounded-2xl p-6 shadow-sm" },
+                React.createElement('h2', { className: "text-lg font-bold text-red-700 dark:text-red-400 mb-2 flex items-center gap-2" }, 
+                    React.createElement('svg', { className: "h-5 w-5", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" })),
+                    "Fix GitHub Security Alert"
+                ),
+                React.createElement('p', { className: "text-sm text-gray-700 dark:text-gray-300 mb-4" }, 
+                    "Google sent an email because the API key is in the code. To stop the emails and secure the data:"
+                ),
+                React.createElement('div', { className: "bg-white dark:bg-gray-900 p-4 rounded-xl text-sm space-y-2 border border-red-200 dark:border-red-900" },
+                    React.createElement('p', null, "1. Go to ", React.createElement('a', { href: "https://console.cloud.google.com/apis/credentials", target: "_blank", className: "text-blue-600 font-bold underline" }, "Google Cloud Credentials")),
+                    React.createElement('p', null, "2. Edit the API Key (starts with AIzaSyAO)."),
+                    React.createElement('p', null, "3. Set restriction to 'Website'."),
+                    React.createElement('p', null, "4. Add: ", React.createElement('code', { className: "bg-gray-100 dark:bg-gray-800 px-1 rounded" }, "jitpur-kirana.web.app/*")),
+                    React.createElement('p', null, "5. Click Save. This 'locks' the key to your site.")
+                )
+            ),
+
+            // CLOUD STATUS
             React.createElement('div', { className: `p-6 rounded-2xl border-2 shadow-sm transition-all ${syncError ? 'bg-red-50 border-red-200 dark:bg-red-900/10 dark:border-red-900' : 'bg-green-50 border-green-200 dark:bg-green-900/10 dark:border-green-900'}` },
                 React.createElement('div', { className: "flex items-center justify-between" },
                     React.createElement('div', null,
@@ -143,23 +147,17 @@ const Settings = () => {
             // SYSTEM ACTIONS
             React.createElement('div', { className: "grid grid-cols-1 sm:grid-cols-2 gap-4" },
                 deferredPrompt && React.createElement(ActionButton, {
-                    label: "Install as Mobile App",
+                    label: "Install Mobile App",
                     color: "green",
                     icon: React.createElement('svg', { className: "h-5 w-5", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" })),
                     onClick: handleInstallClick
                 }),
                 React.createElement(ActionButton, {
-                    label: "Download Full Database",
+                    label: "Download Database",
                     color: "gray",
                     icon: React.createElement('svg', { className: "h-5 w-5", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor" }, React.createElement('path', { strokeLinecap: "round", strokeLinejoin: "round", strokeWidth: 2, d: "M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" })),
                     onClick: handleBackup
                 })
-            ),
-
-            // FOOTER INFO
-            React.createElement('div', { className: "text-center space-y-2 opacity-50 pt-8" },
-                React.createElement('p', { className: "text-xs" }, "Instance ID: jitpur-kirana-v1.0.4"),
-                React.createElement('p', { className: "text-[10px] font-mono" }, "firebase.google.com/docs/hosting")
             )
         )
     );
