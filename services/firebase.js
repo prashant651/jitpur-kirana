@@ -1,4 +1,7 @@
-// Production Firebase Configuration for Jitpur Kirana
+// Jitpur Kirana Firebase Engine
+// SECURITY NOTE: This API Key is public by design for browser-based apps.
+// To stop Google Security Alerts: Restrict this key to "jitpur-kirana.web.app" 
+// in the Google Cloud Console (APIs & Services > Credentials).
 const defaultFirebaseConfig = {
   apiKey: "AIzaSyAOupIUwxUzFwNqw13Z9BFyxVcY4hNMN0M",
   authDomain: "jitpur-kirana.firebaseapp.com",
